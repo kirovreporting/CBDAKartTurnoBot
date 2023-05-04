@@ -1,0 +1,8 @@
+[Unit]
+Description=Pyhton bot for detecting free rent slots at Buenos Aires Kartodromo
+Documentation=https://tarot.shortcut.ru/shortcut/micromdm-webhook-handler
+
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /etc/micromdm/webhookhandler/app.py
