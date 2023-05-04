@@ -110,10 +110,8 @@ dates = []
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
-chrome_options.set_capability("browserVersion", "112.0.5615.138")
-version = read_version_from_cmd("/usr/bin/chromium --version", PATTERN["chromium"])
 driver = webdriver.Chrome(
-    ChromeDriverManager(version=version).install(), chrome_options=chrome_options)
+    ChromeDriverManager(version=config['driverVersion']).install(), chrome_options=chrome_options)
 
 # checking if we are allowed to send message
 if now.hour < config["sleepBefore"] or now.hour > config["sleepAfter"]:
