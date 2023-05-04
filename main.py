@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.utils import read_version_from_cmd, PATTERN
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -110,8 +111,9 @@ chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
 chrome_options.set_capability("browserVersion", "112.0.5615.138")
+version = read_version_from_cmd("/usr/bin/chromium --version", PATTERN["chromium"])
 driver = webdriver.Chrome(
-    ChromeDriverManager().install(), chrome_options=chrome_options)
+    ChromeDriverManager(version=version).install(), chrome_options=chrome_options)
 
 # checking if we are allowed to send message
 if now.hour < config["sleepBefore"] or now.hour > config["sleepAfter"]:
