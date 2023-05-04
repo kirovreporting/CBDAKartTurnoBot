@@ -4,5 +4,6 @@ Documentation=https://github.com/kirovreporting/CDBAKartTurnoBot
 
 
 [Service]
+WorkingDirectory=/etc/CDBAKartTurnoBot/
 Type=oneshot
 ExecStart=/usr/bin/python3 /etc/CDBAKartTurnoBot/main.py
