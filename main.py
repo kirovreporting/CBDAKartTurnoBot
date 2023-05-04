@@ -47,7 +47,7 @@ def composeMessage(dates):
 
         else:
             nowDate = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            if nowDate - fileModDate == timedelta(days=1):
+            if nowDate - fileModDate >= timedelta(days=1):
                 messageText = messageText + "Всё ещё доступны для записи:\n"
                 for day in oldDaysDump:
                     messageText = messageText + day + "\n"
@@ -67,10 +67,10 @@ def composeMessage(dates):
 
             messageText = messageText + day + "\n"
 
-        with open('days.txt', 'w') as oldDaysFile:
+    with open('days.txt', 'w') as oldDaysFile:
 
-            oldDaysDump = oldDaysDump + newDays
-            json.dump(oldDaysDump, oldDaysFile)
+        oldDaysDump = oldDaysDump + newDays
+        json.dump(oldDaysDump, oldDaysFile)
 
     if not messageText == "":
         messageText = messageText + \
