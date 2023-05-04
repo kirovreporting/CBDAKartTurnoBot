@@ -71,6 +71,10 @@ def composeMessage(dates):
             oldDaysDump = oldDaysDump + newDays
             json.dump(oldDaysDump, oldDaysFile)
 
+    if not messageText == "":
+        messageText = messageText + \
+            "https://www.clubargentinodekart.com.ar/alquiler-de-karting/"
+
     return messageText
 
 
