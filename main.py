@@ -20,8 +20,8 @@ def composeMessage(dates):
 
     try:
 
-        with open('days.txt', 'r') as oldDaysFile:
-            oldDaysDump = json.load(oldDaysFile)
+        with open('days.txt', 'r') as daysFile:
+            oldDaysDump = json.load(daysFile)
 
         for date in dates.keys():
             if (date not in oldDaysDump.keys()):
@@ -31,7 +31,7 @@ def composeMessage(dates):
                     send = True    
                 oldDaysDump.pop(date)
 
-        if not oldDaysDump == []:
+        if not oldDaysDump == {}:
             send = True
 
         if dates == {}:
@@ -43,16 +43,19 @@ def composeMessage(dates):
             send = True
 
     if send:
-        messageText += "Изменились свободные для записи даты:\n"
+        if dates == {}:
+            messageText += "Нет свободных дат"
+        else:    
+            messageText += "Изменились свободные для записи даты:\n"
 
-        for date in dates:
-            messageText += date.split(' ', 1)[-1][:-9] + " — " + str(dates[date]) + " carrera\\(s\\)" + "\n"
+            for date in dates:
+                messageText += date.split(' ', 1)[-1][:-9] + " — " + str(dates[date]) + " carrera\\(s\\)" + "\n"
 
-        messageText = messageText + \
-            "Записаться [тут](https://www.clubargentinodekart.com.ar/alquiler-de-karting/)"
+            messageText = messageText + \
+                "Записаться [тут](https://www.clubargentinodekart.com.ar/alquiler-de-karting/)"
 
-    with open('days.txt', 'w') as oldDaysFile:
-        json.dump(dates, oldDaysFile)
+    with open('days.txt', 'w') as daysFile:
+        json.dump(dates, daysFile)
 
     return messageText
 
@@ -89,10 +92,8 @@ def sendMessage(messageText, token, chat_id):
             'text': messageText,
             'parse_mode': "MarkdownV2",
         }
-        print(data)
         request = requests.post(sendUrl, data=data)
         response = json.loads(request.content.decode('utf8'))
-        print(response)
 
         with open('lastMessage.txt', 'w') as lastMessageFile:
             json.dump(response, lastMessageFile)
@@ -152,18 +153,31 @@ select.select_by_value("4942")
 # parse current month page
 freeDatesCurrentMonth = driver.find_elements(By.CLASS_NAME, 'cal_dia')
 
-parseHours(freeDatesCurrentMonth,dates)
+try:
+
+    parseHours(freeDatesCurrentMonth,dates)
+
+except:
+
+    sendMessage("An error has occurred", config["token"], config["chatID"])
+    exit(1)
 
 # getting next month page
 driver.find_element(By.CLASS_NAME, 'arrow-next').click()
 WebDriverWait(driver, 30, poll_frequency=1).until(EC.invisibility_of_element_located(
     (By.ID, "prevloader")), 'Timed out waiting for calendar')
-time.sleep(5)
+time.sleep(3)
 
 # parse next month page
 freeDatesNextMonth = driver.find_elements(By.CLASS_NAME, 'cal_dia')
 
-parseHours(freeDatesNextMonth,dates)
+try:
 
+    parseHours(freeDatesNextMonth,dates)
+
+except:
+
+    sendMessage("An error has occurred", config["token"], config["chatID"])
+    exit(1)
 
 sendMessage(composeMessage(dates), config["token"], config["chatID"])
