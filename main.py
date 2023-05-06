@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.core.utils import read_version_from_cmd, PATTERN
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -19,62 +18,44 @@ def composeMessage(dates):
     messageText = ""
     oldDaysDump = []
     newDays = []
+    send = False
+
+    for date in dates:
+        date = date.split(' ', 1)[-1][:-9]
+        newDays.append(date)
 
     try:
 
-        fileModDate = datetime.fromtimestamp(os.path.getmtime(
-            "days.txt"), timeZone).replace(hour=0, minute=0, second=0, microsecond=0)
-
         with open('days.txt', 'r') as oldDaysFile:
             oldDaysDump = json.load(oldDaysFile)
-            oldDaysGone = oldDaysDump.copy()
 
-        for date in dates:
-            date = date.split(' ', 1)[-1][:-9]
-            if date in oldDaysGone:
-                oldDaysGone.remove(date)
+        for date in newDays:
+            if (date not in oldDaysDump):
+                send = True
             else:
-                newDays.append(date)
+                oldDaysDump.remove(date)
 
-        if not oldDaysGone == []:
-            messageText = messageText + "Закрылись даты:\n"
-            for goneDay in oldDaysGone:
-                messageText = messageText + goneDay + "\n"
-                oldDaysDump.remove(goneDay)
+        if not oldDaysDump == []:
+            send = True
 
-        if oldDaysDump == []:
+        if newDays == []:
             os.remove("days.txt")
-
-        else:
-            nowDate = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            if nowDate - fileModDate >= timedelta(days=1):
-                messageText = messageText + "Всё ещё доступны для записи:\n"
-                for day in oldDaysDump:
-                    messageText = messageText + day + "\n"
 
     except FileNotFoundError:
 
-        for date in dates:
+        pass
 
-            date = date.split(' ', 1)[-1][:-9]
-            newDays.append(date)
-
-    if not newDays == []:
-
-        messageText = messageText + "Новые свободные даты для записи:\n"
+    if send:
+        messageText += "Изменились свободные для записи даты:\n"
 
         for day in newDays:
+            messageText += day + "\n"
 
-            messageText = messageText + day + "\n"
-
-    with open('days.txt', 'w') as oldDaysFile:
-
-        oldDaysDump = oldDaysDump + newDays
-        json.dump(oldDaysDump, oldDaysFile)
-
-    if not messageText == "":
         messageText = messageText + \
             "https://www.clubargentinodekart.com.ar/alquiler-de-karting/"
+
+    with open('days.txt', 'w') as oldDaysFile:
+        json.dump(newDays, oldDaysFile)
 
     return messageText
 
