@@ -43,7 +43,8 @@ def composeMessage(dates):
 
     except FileNotFoundError:
 
-        pass
+        if not newDays == []:
+            send = True
 
     if send:
         messageText += "Изменились свободные для записи даты:\n"
@@ -62,15 +63,38 @@ def composeMessage(dates):
 
 def sendMessage(messageText, token, chat_id):
 
-    method = "sendMessage"
-    url = f"https://api.telegram.org/bot{token}/{method}"
+    sendMethod = "sendMessage"
+    deleteMethod = "deleteMessage"
+    sendUrl = f"https://api.telegram.org/bot{token}/{sendMethod}"
+    deleteUrl = f"https://api.telegram.org/bot{token}/{deleteMethod}"
 
     if messageText != "":
+
+        try:
+
+            with open('lastMessage.txt', 'r') as lastMessageFile:
+                lastMessage = json.load(lastMessageFile)
+
+                if lastMessage['ok']:
+                    data = {
+                        'chat_id': chat_id,
+                        'message_id': lastMessage['result']['message_id'],
+                    }
+                    request = requests.post(deleteUrl, data=data)
+
+        except FileNotFoundError:
+
+            pass
+
         data = {
             'chat_id': chat_id,
             'text': messageText,
         }
-        requests.post(url, data=data, stream=True)
+        request = requests.post(sendUrl, data=data)
+        response = json.loads(request.content.decode('utf8'))
+
+        with open('lastMessage.txt', 'w') as lastMessageFile:
+            json.dump(response, lastMessageFile)
 
 
 try:
