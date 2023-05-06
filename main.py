@@ -13,8 +13,6 @@ from datetime import datetime, timedelta
 
 def composeMessage(dates):
 
-    timeZone = timezone('America/Argentina/Buenos_Aires')
-    now = datetime.now(timeZone)
     messageText = ""
     oldDaysDump = []
     newDays = []
@@ -53,7 +51,7 @@ def composeMessage(dates):
             messageText += day + "\n"
 
         messageText = messageText + \
-            "https://www.clubargentinodekart.com.ar/alquiler-de-karting/"
+            "Записаться [тут](https://www.clubargentinodekart.com.ar/alquiler-de-karting/)"
 
     with open('days.txt', 'w') as oldDaysFile:
         json.dump(newDays, oldDaysFile)
@@ -89,6 +87,7 @@ def sendMessage(messageText, token, chat_id):
         data = {
             'chat_id': chat_id,
             'text': messageText,
+            'parse_mode': "MarkdownV2",
         }
         request = requests.post(sendUrl, data=data)
         response = json.loads(request.content.decode('utf8'))
