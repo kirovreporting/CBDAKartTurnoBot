@@ -113,7 +113,10 @@ def parseHours(freeDates,dates):
         WebDriverWait(driver, 30, poll_frequency=1).until(EC.invisibility_of_element_located(
         (By.CLASS_NAME, 'close')), 'Timed out waiting for calendar')
         for element in elements:
-            dates[element['title']] = len(hours)
+            if len(hours) == 0:
+                dates.pop(element['title'])
+            else:
+                dates[element['title']] = len(hours)
 
 
 try:
@@ -138,7 +141,7 @@ driver = webdriver.Chrome(
     ChromeDriverManager(version=config['driverVersion']).install(), chrome_options=chrome_options)
 
 # checking if we are allowed to send message
-if now.hour < config["sleepBefore"] or now.hour > config["sleepAfter"]:
+if now.hour < config["sleepBefore"] or now.hour >= config["sleepAfter"]:
     exit()
 
 # getting current month page
