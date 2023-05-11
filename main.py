@@ -119,6 +119,14 @@ def parseHours(freeDates,dates):
                 dates[element['title']] = len(hours)
 
 
+def handleException(handledException):
+
+    with open('error.log', 'a+') as errorLogFile:
+        errorLogFile.write("//////////////////////\n"+str(datetime.now())+"\n"+str(handledException))
+    sendMessage("An error has occurred", config["token"], config["chatID"])
+    exit(1)
+
+
 try:
 
     with open('bot.config', 'r') as configFile:
@@ -162,9 +170,7 @@ try:
 
 except Exception as e:
 
-    print(e)
-    sendMessage("An error has occurred", config["token"], config["chatID"])
-    exit(1)
+    handleException(e)
 
 # getting next month page
 driver.find_element(By.CLASS_NAME, 'arrow-next').click()
@@ -181,8 +187,6 @@ try:
 
 except Exception as e:
 
-    print(e)
-    sendMessage("An error has occurred", config["token"], config["chatID"])
-    exit(1)
+    handleException(e)
 
 sendMessage(composeMessage(dates), config["token"], config["chatID"])
