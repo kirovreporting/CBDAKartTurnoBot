@@ -160,8 +160,9 @@ try:
 
     parseHours(freeDatesCurrentMonth,dates)
 
-except:
+except Exception as e:
 
+    print(e)
     sendMessage("An error has occurred", config["token"], config["chatID"])
     exit(1)
 
@@ -178,8 +179,9 @@ try:
 
     parseHours(freeDatesNextMonth,dates)
 
-except:
+except Exception as e:
 
+    print(e)
     sendMessage("An error has occurred", config["token"], config["chatID"])
     exit(1)
 
