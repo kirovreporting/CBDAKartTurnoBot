@@ -124,6 +124,7 @@ def handleException(handledException):
     with open('error.log', 'a+') as errorLogFile:
         errorLogFile.write("//////////////////////\n"+str(datetime.now())+"\n"+str(handledException))
     sendMessage("An error has occurred", config["token"], config["chatID"])
+    os.remove("days.txt")
     exit(1)
 
 
