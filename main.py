@@ -130,7 +130,7 @@ def handleException(handledException):
 
 try:
 
-    with open('bot.config', 'r') as configFile:
+    with open('bot.config.json', 'r') as configFile:
         config = json.load(configFile)
 
 except FileNotFoundError:
