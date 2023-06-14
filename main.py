@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import os.path
+import traceback
 import requests
 import json, time
 from pytz import timezone
@@ -60,7 +61,7 @@ def composeMessage(dates):
     return messageText
 
 
-def sendMessage(messageText, token, chat_id):
+def sendMessage(messageText, token, chat_id, silence):
 
     sendMethod = "sendMessage"
     deleteMethod = "deleteMessage"
@@ -90,6 +91,7 @@ def sendMessage(messageText, token, chat_id):
         data = {
             'chat_id': chat_id,
             'text': messageText,
+            'disable_notification': silence,
             'parse_mode': "MarkdownV2",
         }
         request = requests.post(sendUrl, data=data)
@@ -123,7 +125,7 @@ def handleException(handledException):
 
     with open('error.log', 'a+') as errorLogFile:
         errorLogFile.write("//////////////////////\n"+str(datetime.now())+"\n"+str(handledException))
-    sendMessage("Error:\n"+str(handledException), config["token"], config["errorChatID"])
+    sendMessage("Error:\n"+traceback.format_exc(), config["token"], config["errorChatID"],False)
     os.remove("days.txt")
     exit(1)
 
@@ -190,4 +192,4 @@ except Exception as e:
 
     handleException(e)
 
-sendMessage(composeMessage(dates), config["token"], config["chatID"])
+sendMessage(composeMessage(dates), config["token"], config["chatID"], config["silence"])
