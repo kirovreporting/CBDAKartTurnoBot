@@ -65,8 +65,12 @@ def sendMessage(messageText, token, chat_id, silence):
 
     sendMethod = "sendMessage"
     deleteMethod = "deleteMessage"
+    updateMethod = "editMessageText"
     sendUrl = f"https://api.telegram.org/bot{token}/{sendMethod}"
+    updateUrl = f"https://api.telegram.org/bot{token}/{updateMethod}"
     deleteUrl = f"https://api.telegram.org/bot{token}/{deleteMethod}"
+    updateMessage = False
+    lastMessage = {}
 
     if messageText != "":
 
@@ -74,13 +78,16 @@ def sendMessage(messageText, token, chat_id, silence):
 
             with open('lastMessage.txt', 'r') as lastMessageFile:
                 lastMessage = json.load(lastMessageFile)
-
+                today = datetime.now().date()
                 if lastMessage['ok']:
-                    data = {
-                        'chat_id': chat_id,
-                        'message_id': lastMessage['result']['message_id'],
-                    }
-                    request = requests.post(deleteUrl, data=data)
+                    if datetime.fromtimestamp(lastMessage['result']['date']).date() == today:
+                        updateMessage = True
+                    else:
+                        data = {
+                            'chat_id': chat_id,
+                            'message_id': lastMessage['result']['message_id'],
+                        }
+                        request = requests.post(deleteUrl, data=data)
             
             os.remove("lastMessage.txt")
 
@@ -88,17 +95,26 @@ def sendMessage(messageText, token, chat_id, silence):
 
             pass
 
-        data = {
-            'chat_id': chat_id,
-            'text': messageText,
-            'disable_notification': silence,
-            'parse_mode': "MarkdownV2",
-        }
-        request = requests.post(sendUrl, data=data)
-        response = json.loads(request.content.decode('utf8'))
+        if updateMessage:
+            data = {
+                'chat_id': chat_id,
+                'message_id': lastMessage['result']['message_id'],
+                'text': messageText,
+                'parse_mode': "MarkdownV2",
+            }
+            request = requests.post(updateUrl, data=data)
+        else:
+            data = {
+                'chat_id': chat_id,
+                'text': messageText,
+                # 'disable_notification': silence,
+                'parse_mode': "MarkdownV2",
+            }
+            request = requests.post(sendUrl, data=data)
+            response = json.loads(request.content.decode('utf8'))
 
-        with open('lastMessage.txt', 'w') as lastMessageFile:
-            json.dump(response, lastMessageFile)
+            with open('lastMessage.txt', 'w') as lastMessageFile:
+                json.dump(response, lastMessageFile)
 
 
 def parseHours(freeDates,dates):
