@@ -53,7 +53,8 @@ def composeMessage(dates):
                 messageText += date.split(' ', 1)[-1][:-9] + " — " + str(dates[date]) + " carrera\\(s\\)" + "\n"
 
             messageText = messageText + \
-                "Записаться [тут](https://www.clubargentinodekart.com.ar/alquiler-de-karting/)"
+                "Записаться — [тут](https://www.clubargentinodekart.com.ar/alquiler-de-karting/)\n" + \
+                "Инфа о записи и картодромах — [тут](https://k1rovreporting.notion.site/d12ba14c633a46bf806cbf8c4ae0626a)"
 
     with open('days.txt', 'w') as daysFile:
         json.dump(dates, daysFile)
