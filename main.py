@@ -88,8 +88,7 @@ def sendMessage(messageText, token, chat_id, silence):
                             'message_id': lastMessage['result']['message_id'],
                         }
                         request = requests.post(deleteUrl, data=data)
-            
-            os.remove("lastMessage.txt")
+                        os.remove("lastMessage.txt")
 
         except FileNotFoundError:
 
@@ -107,7 +106,7 @@ def sendMessage(messageText, token, chat_id, silence):
             data = {
                 'chat_id': chat_id,
                 'text': messageText,
-                # 'disable_notification': silence,
+                'disable_notification': silence,
                 'parse_mode': "MarkdownV2",
             }
             request = requests.post(sendUrl, data=data)
