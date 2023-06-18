@@ -70,6 +70,7 @@ def sendMessage(messageText, token, chat_id, silence):
     sendUrl = f"https://api.telegram.org/bot{token}/{sendMethod}"
     updateUrl = f"https://api.telegram.org/bot{token}/{updateMethod}"
     deleteUrl = f"https://api.telegram.org/bot{token}/{deleteMethod}"
+    timeZone = timezone('America/Argentina/Buenos_Aires')
     updateMessage = False
     lastMessage = {}
 
@@ -79,7 +80,7 @@ def sendMessage(messageText, token, chat_id, silence):
 
             with open('lastMessage.txt', 'r') as lastMessageFile:
                 lastMessage = json.load(lastMessageFile)
-                today = datetime.now().date()
+                today = datetime.now(timeZone).date()
                 if lastMessage['ok']:
                     if datetime.fromtimestamp(lastMessage['result']['date']).date() == today:
                         updateMessage = True
