@@ -82,7 +82,7 @@ def sendMessage(messageText, token, chat_id, silence):
                 lastMessage = json.load(lastMessageFile)
                 today = datetime.now(timeZone).date()
                 if lastMessage['ok']:
-                    if datetime.fromtimestamp(lastMessage['result']['date']).date() == today:
+                    if datetime.fromtimestamp(lastMessage['result']['date'], timezone('America/Argentina/Buenos_Aires')).date() == today:
                         updateMessage = True
                     else:
                         data = {
